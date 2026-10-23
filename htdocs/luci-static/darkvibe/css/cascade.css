@@ -1201,10 +1201,7 @@ button.cbi-button {
 	border-radius: var(--radius);
 	padding: 14px 16px;
 	margin: 18px 0 6px;
-	position: sticky;
-	bottom: 12px;
 	box-shadow: var(--shadow-sm);
-	z-index: 40;
 }
 
 .cbi-page-actions .cbi-button-link:first-child {
@@ -1931,6 +1928,18 @@ body.modal-overlay-active #modal_overlay {
 	color: var(--faint);
 	font-weight: 400;
 	font-style: italic;
+}
+
+/* Бейджи зон firewall получают inline-стиль background-color: rgb(var(--zone-color-rgb))
+ * — светлый фирменный цвет зоны. Текст внутри должен быть тёмным, иначе на
+ * светлом фоне он не читается (белый по розовому). */
+.zonebadge[style*='background-color'] {
+	color: #20242c;
+}
+
+/* Тултип внутри бейджа — тёмная плашка, наследуемый тёмный цвет ломал бы его */
+.zonebadge .cbi-tooltip {
+	color: var(--text);
 }
 
 .zone-forwards {

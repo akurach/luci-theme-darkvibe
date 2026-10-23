@@ -10,7 +10,7 @@ import tempfile
 ARCH = sys.argv[1] if len(sys.argv) > 1 else "aarch64_cortex-a53"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # корень репы
 OUT = os.path.join(ROOT, "dist")
-PKG, VER, REL = "luci-theme-darkvibe", "1.4.1", "1"
+PKG, VER, REL = "luci-theme-darkvibe", "1.4.2", "1"
 
 DATA_MAP = [  # (источник, путь в data.tar.gz)
     ("htdocs/luci-static/darkvibe", "www/luci-static/darkvibe"),
