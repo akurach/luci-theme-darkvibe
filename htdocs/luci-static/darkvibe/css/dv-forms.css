@@ -1,0 +1,28 @@
+/* DarkVibe UX-модуль dv-forms — стили. ТЗ: TZ-UX-volna1.md (п.3, п.7)
+ *
+ * Модалка подтверждения ухода и тост черновика собраны на штатных классах
+ * LuCI (.modal, .alert-message, .btn), здесь — только специфичное для
+ * модуля: ряд кнопок тоста и мягкое выделение предупреждающих нотификаций.
+ * Цвета — только из дизайн-токенов темы (см. cascade.css).
+ */
+
+/* Кнопки «Восстановить / Удалить» в тосте черновика */
+.dv-draft-actions {
+	display: flex;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+/* Тост черновика — предупреждающий, но не пугающий */
+.alert-message.warning {
+	background: var(--warning-soft, rgba(230, 180, 60, .12));
+	border-color: var(--warning, #e6b43c);
+	color: var(--ink, #edf1ea);
+}
+
+/* Кнопка «Уйти» в модалке — опасное действие, акцент danger */
+.modal .cbi-button-negative {
+	background: var(--danger, #e05a4e);
+	border-color: var(--danger, #e05a4e);
+	color: var(--on-accent, #fff);
+}

@@ -1,0 +1,50 @@
+/*
+ * DarkVibe UX-модуль dv-dropdown — стили поля фильтра в длинных dropdown'ах.
+ * ТЗ: TZ-UX-volna1.md, п.5.
+ *
+ * Поле вставляется первым элементом ul.dropdown (макс. высота 300px,
+ * overflow-y: auto — см. cascade.css), поэтому оно position: sticky
+ * и прилипает к верхней кромке меню при скролле. Отрицательные маргины
+ * компенсируют padding меню (6px), чтобы поле лежало в один ряд с пунктами.
+ */
+
+/* Поле фильтра */
+ul.dropdown > input.dv-dd-filter {
+	position: sticky;
+	top: -6px;
+	z-index: 2;
+	display: block;
+	width: auto;
+	margin: -6px -6px 6px;
+	padding: 7px 10px;
+	font-family: var(--mono);
+	font-size: 12.5px;
+	color: var(--ink);
+	background: var(--panel);
+	border: 1px solid var(--line);
+	border-radius: var(--radius-sm);
+	outline: none;
+}
+
+ul.dropdown > input.dv-dd-filter::placeholder {
+	color: var(--faint);
+}
+
+ul.dropdown > input.dv-dd-filter:focus {
+	border-color: var(--focus);
+	box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* Подсветка активного пункта клавиатурной навигацией —
+ * в тон выбранному пункту (акцентная мягкая заливка) */
+ul.dropdown > li.dv-dd-active {
+	color: var(--accent-ink);
+	background: var(--accent-soft);
+}
+
+/* Пункт-заглушка "Нет совпадений": не кликабелен,
+ * цвет приглушённый берём из штатного стиля li[unselectable] cascade.css */
+ul.dropdown > li.dv-dd-empty {
+	cursor: default;
+	pointer-events: none;
+}

@@ -1,0 +1,273 @@
+/* DarkVibe UX-модуль dv-menu — стили. ТЗ: TZ-UX-volna1.md (п.4, п.8, п.9) */
+
+/* ==========================================================================
+   П.4 — палитра Ctrl+K
+   ========================================================================== */
+
+.dv-palette-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 3000;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding: 12vh 16px 16px;
+	background: rgba(4, 6, 5, .55);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+}
+
+/* Блокируем прокрутку страницы под палитрой */
+body.dv-palette-open {
+	overflow: hidden;
+}
+
+.dv-palette {
+	width: 560px;
+	max-width: 100%;
+	background: var(--panel);
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow);
+	overflow: hidden;
+}
+
+.dv-palette-bar {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 14px 16px;
+	border-bottom: 1px solid var(--line-soft);
+}
+
+.dv-palette-icon {
+	display: inline-flex;
+	color: var(--faint);
+	flex: none;
+}
+
+.dv-palette-icon svg {
+	width: 18px;
+	height: 18px;
+}
+
+.dv-palette-input {
+	flex: 1;
+	min-width: 0;
+	background: transparent;
+	border: 0;
+	outline: none;
+	color: var(--ink);
+	font-size: 15px;
+	font-family: inherit;
+}
+
+.dv-palette-input::placeholder {
+	color: var(--faint);
+}
+
+.dv-palette-list {
+	margin: 0;
+	padding: 6px;
+	list-style: none;
+	max-height: 50vh;
+	overflow-y: auto;
+}
+
+.dv-palette-caption {
+	padding: 8px 10px 4px;
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	color: var(--faint);
+}
+
+.dv-palette-item {
+	padding: 9px 10px;
+	border-radius: var(--radius-sm);
+	color: var(--muted);
+	font-size: 13.5px;
+	cursor: pointer;
+}
+
+.dv-palette-item:hover {
+	background: var(--soft);
+	color: var(--ink);
+}
+
+.dv-palette-item.active {
+	background: var(--accent-soft);
+	color: var(--ink);
+}
+
+.dv-palette-empty {
+	padding: 14px 10px;
+	color: var(--faint);
+	font-size: 13px;
+	list-style: none;
+}
+
+/* ==========================================================================
+   П.4 — иконка поиска в шапке (mobile, < 768px)
+   ========================================================================== */
+
+.dv-search-btn {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	padding: 0;
+	flex: none;
+	background: var(--soft);
+	border: 1px solid var(--line);
+	border-radius: var(--radius-sm);
+	color: var(--muted);
+	cursor: pointer;
+}
+
+.dv-search-btn:hover {
+	color: var(--ink);
+	border-color: var(--accent-line);
+}
+
+.dv-search-btn svg {
+	width: 16px;
+	height: 16px;
+}
+
+@media (max-width: 767px) {
+	.dv-search-btn {
+		display: inline-flex;
+	}
+}
+
+/* ==========================================================================
+   П.8 — звёздочка в заголовке страницы
+   ========================================================================== */
+
+/* Заголовок с звёздочкой переводим в инлайн, чтобы кнопка встала справа
+   на той же строке (применяется только при наличии звёздочки — JS-метка) */
+#view h2.dv-fav-target,
+#maincontent .container > h2.dv-fav-target {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.dv-fav-star {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	margin: 0 0 4px 8px;
+	padding: 0;
+	vertical-align: middle;
+	background: transparent;
+	border: 0;
+	border-radius: var(--radius-sm);
+	color: var(--faint);
+	cursor: pointer;
+	transition: color .15s ease, background .15s ease;
+}
+
+.dv-fav-star:hover {
+	background: var(--soft);
+	color: var(--accent-ink);
+}
+
+.dv-fav-star.active {
+	color: var(--accent-ink);
+}
+
+.dv-fav-star svg {
+	width: 18px;
+	height: 18px;
+}
+
+/* ==========================================================================
+   П.8 — секция «Избранное» в сайдбаре (слот над меню)
+   ========================================================================== */
+
+.dv-favorites-slot {
+	margin-bottom: 10px;
+}
+
+.dv-favorites-head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 9px 12px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--muted);
+}
+
+.dv-favorites-head .menu-icon {
+	display: inline-flex;
+	color: var(--accent-ink);
+}
+
+.dv-favorites-head .menu-icon svg {
+	width: 16px;
+	height: 16px;
+}
+
+.dv-fav-list {
+	margin: 0;
+	padding: 0 6px;
+	list-style: none;
+}
+
+.dv-fav-list a {
+	display: block;
+	padding: 7px 12px 7px 38px;
+	border-radius: var(--radius-sm);
+	color: var(--muted);
+	font-size: 13px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dv-fav-list a:hover {
+	background: var(--soft);
+	color: var(--ink);
+}
+
+.dv-fav-list a.active {
+	background: var(--accent-soft);
+	color: var(--accent-ink);
+}
+
+/* В свёрнутом сайдбаре текст не влезает — прячем секцию целиком */
+body.sidebar-collapsed .dv-favorites-slot {
+	display: none;
+}
+
+/* ==========================================================================
+   П.9 — статус Морока второй строкой в пункте меню
+   ========================================================================== */
+
+.dv-morok-status {
+	padding: 2px 12px 8px 38px;
+	font-size: 11px;
+	line-height: 1.35;
+	color: var(--faint);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	pointer-events: none; /* статус — некликабельный текст */
+}
+
+/* В свёрнутом сайдбаре подпись скрыта */
+body.sidebar-collapsed .dv-morok-status {
+	display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.dv-fav-star {
+		transition: none;
+	}
+}

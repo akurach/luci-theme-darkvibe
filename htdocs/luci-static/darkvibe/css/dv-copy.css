@@ -1,0 +1,107 @@
+/* DarkVibe UX-модуль dv-copy — стили. ТЗ: TZ-UX-volna1.md §6 */
+
+/* --------------------------------------------------------------------------
+ * Плавающая иконка копирования (position: fixed, создаётся в dv-copy.js)
+ * ------------------------------------------------------------------------ */
+
+.dv-copy-btn {
+	position: fixed;
+	z-index: 10000;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	padding: 2px;
+	box-sizing: border-box;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-sm);
+	background: var(--panel);
+	color: var(--muted);
+	box-shadow: var(--shadow-sm);
+	cursor: pointer;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-1px);
+	transition: opacity .12s ease, color .12s ease, background-color .12s ease,
+		border-color .12s ease, transform .12s ease, visibility .12s;
+}
+
+.dv-copy-btn.dv-copy-show {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+}
+
+.dv-copy-btn:hover,
+.dv-copy-btn:focus-visible {
+	color: var(--accent);
+	background: var(--accent-soft);
+	border-color: var(--accent-line);
+	outline: none;
+}
+
+.dv-copy-btn svg {
+	display: block;
+	width: 14px;
+	height: 14px;
+}
+
+/* Две иконки (copy / check) — переключаются классом .dv-copy-done */
+.dv-copy-ic {
+	display: inline-flex;
+}
+
+.dv-copy-ic-check {
+	display: none;
+}
+
+.dv-copy-btn.dv-copy-done {
+	color: var(--good);
+	border-color: var(--good);
+}
+
+.dv-copy-btn.dv-copy-done .dv-copy-ic-copy {
+	display: none;
+}
+
+.dv-copy-btn.dv-copy-done .dv-copy-ic-check {
+	display: inline-flex;
+}
+
+/* --------------------------------------------------------------------------
+ * Фолбэк-тост (используется, только если ui.addTimeLimitedNotification
+ * недоступен; штатный путь — .alert-message из ui.js)
+ * ------------------------------------------------------------------------ */
+
+.dv-copy-toast-own {
+	position: fixed;
+	right: 16px;
+	bottom: 16px;
+	z-index: 10001;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 12px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-sm);
+	background: var(--panel);
+	color: var(--ink);
+	box-shadow: var(--shadow-sm);
+	font-size: 12.5px;
+	line-height: 1.4;
+}
+
+.dv-copy-toast-own::before {
+	content: '';
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--good);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.dv-copy-btn {
+		transition: none;
+	}
+}

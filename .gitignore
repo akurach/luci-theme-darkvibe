@@ -1,0 +1,12 @@
+# Сборка
+/dist-*/
+*.ipk
+
+# Системное
+.DS_Store
+Thumbs.db
+
+# Редакторы
+.vscode/
+.idea/
+*.swp

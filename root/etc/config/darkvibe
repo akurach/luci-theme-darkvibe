@@ -1,0 +1,3 @@
+config global 'global'
+	option accent 'violet'
+	option custom_accent '#c4a7f5'

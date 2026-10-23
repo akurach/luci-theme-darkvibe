@@ -1,0 +1,149 @@
+{#
+	DarkVibe — тёмная тема для LuCI в гамме free-net (графит + лайм).
+	Шаблон каркаса страницы для ucode-движка LuCI (OpenWrt 23.05 / 24.10 / 25.x).
+	Структура по мотивам luci-theme-bootstrap / luci-theme-argon (Apache-2.0).
+-#}
+
+{%
+	import { getuid, getspnam } from 'luci.core';
+	import { cursor } from 'uci';
+
+	/* Акцентный цвет: пресеты + кастомный hex из /etc/config/darkvibe */
+	const DV_PRESETS = {
+		lime:   { hex: '#c3ee7a', ink: '#17200e' },
+		amber:  { hex: '#f2c268', ink: '#241a06' },
+		teal:   { hex: '#7adcd0', ink: '#06231f' },
+		violet: { hex: '#c4a7f5', ink: '#1d1030' },
+		rose:   { hex: '#f2a7bb', ink: '#2b0713' },
+		blue:   { hex: '#8ab8ff', ink: '#0a1a2e' }
+	};
+	function dv_hexpair(h) {
+		const D = '0123456789abcdef';
+		return (index(D, substr(h, 0, 1)) ?? 0) * 16 + (index(D, substr(h, 1, 1)) ?? 0);
+	}
+	let dv_hex = DV_PRESETS.violet.hex, dv_ink = DV_PRESETS.violet.ink;
+	try {
+		const dvcfg = cursor();
+		const dv_name = dvcfg.get('darkvibe', 'global', 'accent') || 'violet';
+		if (dv_name != 'custom' && DV_PRESETS[dv_name]) {
+			dv_hex = DV_PRESETS[dv_name].hex;
+			dv_ink = DV_PRESETS[dv_name].ink;
+		} else {
+			const custom = dvcfg.get('darkvibe', 'global', 'custom_accent') || '';
+			if (match(custom, /^#[0-9a-fA-F]{6}$/)) {
+				dv_hex = custom;
+				const r = dv_hexpair(substr(dv_hex, 1, 2)),
+				      g = dv_hexpair(substr(dv_hex, 3, 2)),
+				      b = dv_hexpair(substr(dv_hex, 5, 2));
+				dv_ink = (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#131b0c' : '#f2f5ee';
+			}
+		}
+	} catch (e) {}
+	const dv_rgb = `${dv_hexpair(substr(dv_hex, 1, 2))}, ${dv_hexpair(substr(dv_hex, 3, 2))}, ${dv_hexpair(substr(dv_hex, 5, 2))}`;
+
+	const boardinfo = ubus.call('system', 'board') ?? {};
+	const hostname = striptags(boardinfo.hostname ?? '?');
+	const page_path = length(ctx.path) > length(ctx.request_path) ? ctx.path : ctx.request_path;
+	/* OpenWrt 25.x называет текущий узел `dispatched`, ≤ 24.10 — `node` */
+	const current_node = global.dispatched ?? global.node;
+
+	http.prepare_content('text/html; charset=UTF-8');
+-%}
+
+<!DOCTYPE html>
+<html lang="{{ dispatcher.lang }}">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{ striptags(`${hostname}${current_node ? ` - ${current_node.title}` : ''}`) }} - LuCI</title>
+	<link rel="icon" href="{{ media }}/img/logo.svg" sizes="any" type="image/svg+xml">
+	<link rel="stylesheet" href="{{ media }}/css/cascade.css">
+	<link rel="stylesheet" href="{{ media }}/css/dv-forms.css">
+	<link rel="stylesheet" href="{{ media }}/css/dv-copy.css">
+	<link rel="stylesheet" href="{{ media }}/css/dv-menu.css">
+	<link rel="stylesheet" href="{{ media }}/css/dv-apply.css">
+	<link rel="stylesheet" href="{{ media }}/css/dv-dropdown.css">
+	<style title="text/css">
+		:root {
+			--accent: {{ dv_hex }}; --accent-ink: {{ dv_hex }};
+			--accent-soft: rgba({{ dv_rgb }}, .12); --accent-line: rgba({{ dv_rgb }}, .35);
+			--on-accent: {{ dv_ink }}; --focus: {{ dv_hex }};
+		}
+	</style>
+	{% if (current_node?.css): %}
+	<link rel="stylesheet" href="{{ resource }}/{{ current_node.css }}">
+	{% endif %}
+	{% if (css): %}
+	<style title="text/css">{{ css }}</style>
+	{% endif %}
+	<script src="{{ dispatcher.build_url('admin/translations', dispatcher.lang) }}"></script>
+	<script src="{{ resource }}/cbi.js"></script>
+</head>
+
+<body class="lang_{{ dispatcher.lang }}{{ current_node?.title ? ` ${entityencode(striptags(current_node.title), true)}` : '' }}{% if (ctx.authsession): %} logged-in{% endif %}"
+	data-page="{{ entityencode(join('-', page_path), true) }}">
+
+	<div class="main">
+		<div class="main-left">
+			<div class="sidenav-header">
+				<a class="brand" href="{{ dispatcher.build_url('admin/status/overview') }}">
+					<span class="logo-img"></span>
+					<span class="hostname">{{ hostname }}</span>
+				</a>
+				<button type="button" class="sidenav-toggler" title="{{ entityencode(_('Toggle sidebar'), true) }}">
+					<i class="sidenav-toggler-line"></i>
+					<i class="sidenav-toggler-line"></i>
+					<i class="sidenav-toggler-line"></i>
+				</button>
+			</div>
+			<div id="mainmenu" style="display:none"></div>
+			<div class="sidenav-footer"><span class="dot"></span>морок · darkvibe</div>
+		</div>
+
+		<div class="main-right">
+			<header>
+				<div class="fill">
+					<div class="flex1">
+						<button type="button" class="showSide" aria-label="{{ entityencode(_('Toggle navigation'), true) }}" aria-controls="mainmenu" aria-expanded="false"></button>
+						<a class="brand" href="{{ dispatcher.build_url('admin/status/overview') }}" title="{{ entityencode(hostname, true) }}">{{ hostname }}</a>
+					</div>
+					<div class="header-actions">
+						<div class="status" id="indicators"></div>
+					</div>
+				</div>
+			</header>
+
+			<div class="darkMask"></div>
+
+			<div id="maincontent">
+				<div class="container">
+
+					{% if (getuid() == 0 && getspnam('root')?.pwdp === ''): %}
+					<div class="alert-message error">
+						<h4>{{ _('No password set!') }}</h4>
+						<p>{{ _('There is no password set on this router. Please configure a root password to protect the web interface.') }}</p>
+						{% if (dispatcher.lookup('admin/system/admin')): %}
+						<div class="right"><a class="btn" href="{{ dispatcher.build_url('admin/system/admin') }}">{{ _('Go to password configuration...') }}</a></div>
+						{% endif %}
+					</div>
+					{% endif %}
+
+					{% if (boardinfo?.rootfs_type == 'initramfs'): %}
+					<div class="alert-message warning">
+						<h4>{{ _('System running in recovery (initramfs) mode.') }}</h4>
+						<p>{{ _('No changes to settings will be stored and are lost after rebooting. This mode should only be used to install a firmware upgrade') }}</p>
+						{% if (dispatcher.lookup('admin/system/flash')): %}
+						<div class="right"><a class="btn" href="{{ dispatcher.build_url('admin/system/flash') }}">{{ _('Go to firmware upgrade...') }}</a></div>
+						{% endif %}
+					</div>
+					{% endif %}
+
+					<noscript>
+						<div class="alert-message error">
+							<h4>{{ _('JavaScript required!') }}</h4>
+							<p>{{ _('You must enable JavaScript in your browser or LuCI will not work properly.') }}</p>
+						</div>
+					</noscript>
+
+					<div id="tabmenu" style="display:none"></div>

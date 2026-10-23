@@ -1,0 +1,29 @@
+{#
+	DarkVibe — подвал страницы (ucode-шаблоны, OpenWrt 23.05 / 24.10+).
+-#}
+
+				</div>
+			</div>
+
+			<footer>
+				<span>
+					Powered by
+					<a href="https://github.com/openwrt/luci" target="_blank" rel="noreferrer">{{ version.luciname }} ({{ version.luciversion }})</a>
+					<span class="footer-separator">|</span>
+					<a href="{{ entityencode(version.disturl ?? '#', true) }}" target="_blank" rel="noreferrer">{{ version.distname }} {{ version.distversion }} ({{ version.distrevision }})</a>
+					<span class="footer-separator">|</span>
+					DarkVibe
+				</span>
+				<ul class="breadcrumb pull-right" id="modemenu" style="display:none"></ul>
+			</footer>
+		</div>
+	</div>
+
+	<script>L.require('menu-darkvibe')</script>
+	<script>L.require('dv-forms')</script>
+	<script>L.require('dv-copy')</script>
+	<script>L.require('dv-menu')</script>
+	<script>L.require('dv-apply')</script>
+	<script>L.require('dv-dropdown')</script>
+</body>
+</html>

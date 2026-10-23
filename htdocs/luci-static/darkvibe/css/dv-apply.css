@@ -1,0 +1,277 @@
+/* DarkVibe UX-модуль dv-apply — стили. ТЗ: TZ-UX-volna1.md §1–2.
+ * Только токены темы, цвета не хардкодятся. */
+
+/* ------------------------------------------------------------------
+ * Контейнер в шапке (.main-right header .fill): чип изменений +
+ * индикатор фонового apply
+ * ---------------------------------------------------------------- */
+
+.dv-status {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-left: 12px;
+	flex: none;
+}
+
+/* Чип «Изменений: N» */
+.dv-chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 3px 10px;
+	border: 1px solid var(--accent-line);
+	border-radius: var(--radius-sm);
+	background: var(--accent-soft);
+	color: var(--ink);
+	font-size: 12px;
+	font-family: var(--font);
+	line-height: 1.4;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: background .15s ease;
+}
+
+.dv-chip:hover,
+.dv-chip:focus-visible {
+	background: var(--panel);
+	border-color: var(--accent);
+	outline: none;
+}
+
+/* Индикатор «Применяется… (N с)» */
+.dv-applying-ind {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	color: var(--muted);
+	font-size: 12px;
+	font-family: var(--font);
+	white-space: nowrap;
+}
+
+.dv-spinner {
+	width: 13px;
+	height: 13px;
+	flex: none;
+	border: 2px solid var(--line);
+	border-top-color: var(--accent);
+	border-radius: 50%;
+	animation: dv-spin 0.8s linear infinite;
+}
+
+@keyframes dv-spin {
+	to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.dv-spinner { animation: none; }
+}
+
+/* Время apply: помечаем кнопки страницы (JS дизейблит их) */
+body.dv-applying .cbi-page-actions .cbi-button-apply,
+body.dv-applying .cbi-page-actions .cbi-button-save,
+body.dv-applying .cbi-page-actions .cbi-button-positive {
+	opacity: 0.55;
+}
+
+/* ------------------------------------------------------------------
+ * Тосты
+ * ---------------------------------------------------------------- */
+
+.dv-toasts {
+	position: fixed;
+	top: 56px;
+	right: 16px;
+	z-index: 1100;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	max-width: min(380px, calc(100vw - 32px));
+}
+
+.dv-toast {
+	position: relative;
+	padding: 10px 34px 10px 14px;
+	border: 1px solid var(--line);
+	border-left-width: 3px;
+	border-radius: var(--radius-sm);
+	background: var(--panel);
+	box-shadow: var(--shadow);
+	color: var(--ink);
+	font-size: 13px;
+	font-family: var(--font);
+	line-height: 1.45;
+	animation: dv-toast-in .2s ease-out;
+}
+
+.dv-toast-out {
+	opacity: 0;
+	transition: opacity .25s ease;
+}
+
+@keyframes dv-toast-in {
+	from { opacity: 0; transform: translateX(12px); }
+	to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.dv-toast { animation: none; }
+	.dv-toast-out { transition: none; }
+}
+
+.dv-toast-success { border-left-color: var(--good); }
+.dv-toast-error   { border-left-color: var(--danger); }
+
+.dv-toast-micro {
+	padding: 6px 12px;
+	font-size: 12px;
+	color: var(--muted);
+}
+
+.dv-toast-title {
+	font-weight: 600;
+}
+
+.dv-toast-success .dv-toast-title { color: var(--good); }
+.dv-toast-error .dv-toast-title   { color: var(--danger); }
+
+.dv-toast-text {
+	margin-top: 4px;
+	color: var(--muted);
+}
+
+.dv-toast-log {
+	margin-top: 6px;
+}
+
+.dv-toast-log summary {
+	cursor: pointer;
+	color: var(--muted);
+	font-size: 12px;
+}
+
+.dv-toast-log summary:hover,
+.dv-toast-log summary:focus-visible {
+	color: var(--accent);
+	outline: none;
+}
+
+.dv-toast-log pre {
+	margin: 6px 0 0;
+	padding: 8px 10px;
+	max-height: 180px;
+	overflow: auto;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-sm);
+	background: var(--paper);
+	color: var(--muted);
+	font-family: var(--mono);
+	font-size: 11px;
+	line-height: 1.5;
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.dv-toast-close {
+	position: absolute;
+	top: 6px;
+	right: 8px;
+	padding: 2px 6px;
+	border: 0;
+	background: transparent;
+	color: var(--faint);
+	font-size: 16px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.dv-toast-close:hover,
+.dv-toast-close:focus-visible {
+	color: var(--ink);
+	outline: none;
+}
+
+/* ------------------------------------------------------------------
+ * Diff-модалка (ТЗ §1)
+ * ---------------------------------------------------------------- */
+
+.dv-diff-cfg {
+	margin: 12px 0 6px;
+	font-family: var(--mono);
+	font-size: 12px;
+	color: var(--accent);
+}
+
+.dv-diff-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 12px;
+	font-family: var(--font);
+}
+
+.dv-diff-table th {
+	padding: 4px 8px;
+	text-align: left;
+	color: var(--faint);
+	font-weight: 600;
+	border-bottom: 1px solid var(--line);
+}
+
+.dv-diff-table td {
+	padding: 4px 8px;
+	vertical-align: top;
+	border-bottom: 1px solid var(--line-soft, var(--line));
+	color: var(--ink);
+}
+
+.dv-diff-table td.dv-diff-sect {
+	font-family: var(--mono);
+	color: var(--muted);
+	white-space: nowrap;
+}
+
+/* Кликабельное значение: копия в буфер по клику */
+.dv-val {
+	cursor: copy;
+	border-bottom: 1px dotted var(--faint);
+	word-break: break-all;
+}
+
+.dv-val:hover,
+.dv-val:focus-visible {
+	color: var(--accent);
+	border-bottom-color: var(--accent);
+	outline: none;
+}
+
+.dv-val-mono {
+	font-family: var(--mono);
+	font-size: 11px;
+}
+
+.dv-val-empty {
+	cursor: default;
+	border-bottom: 0;
+	color: var(--faint);
+}
+
+.dv-diff-hint {
+	margin-top: 10px;
+	font-size: 11px;
+	color: var(--faint);
+}
+
+/* На мобильных тосты ближе к краю, чип не раздуваем */
+@media (max-width: 768px) {
+	.dv-toasts {
+		top: auto;
+		bottom: 16px;
+		right: 12px;
+	}
+
+	.dv-applying-ind .dv-applying-text {
+		max-width: 110px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+}

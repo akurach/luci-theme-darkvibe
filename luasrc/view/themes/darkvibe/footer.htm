@@ -1,0 +1,25 @@
+<%#
+	DarkVibe — подвал страницы (Lua-шаблоны, OpenWrt ≤ 22.03).
+-%>
+
+				</div>
+			</div>
+
+			<footer>
+				<% local ver = require "luci.version" %>
+				<span>
+					Powered by
+					<a href="https://github.com/openwrt/luci" target="_blank" rel="noreferrer"><%= ver.luciname %> (<%= ver.luciversion %>)</a>
+					<span class="footer-separator">|</span>
+					<a href="https://openwrt.org" target="_blank" rel="noreferrer"><%= ver.distversion %></a>
+					<span class="footer-separator">|</span>
+					DarkVibe
+				</span>
+				<ul class="breadcrumb pull-right" id="modemenu" style="display:none"></ul>
+			</footer>
+		</div>
+	</div>
+
+	<script type="text/javascript">L.require('menu-darkvibe')</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<%#
+	DarkVibe — страница входа (Lua-шаблоны, OpenWrt ≤ 22.03 / GL.iNet).
+	Полностью серверный рендер, форма шлёт luci_username/luci_password на текущий URI.
+-%>
+
+<%
+	local util = require "luci.util"
+	local http = require "luci.http"
+
+	local boardinfo = util.ubus("system", "board")
+	local hostname = striptags(boardinfo.hostname or "?")
+	local ver = require "luci.version"
+
+	http.prepare_content("text/html; charset=UTF-8")
+-%>
+
+<!DOCTYPE html>
+<html lang="<%= luci.i18n.context.lang %>">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title><%= hostname %> - LuCI</title>
+	<link rel="icon" href="<%= media %>/img/logo.svg" sizes="any" type="image/svg+xml">
+	<link rel="stylesheet" href="<%= media %>/css/cascade.css">
+</head>
+
+<body class="lang_<%= luci.i18n.context.lang %> login-page-body">
+
+<div class="login-page">
+	<div class="login-card">
+		<span class="brand-mark logo-img"></span>
+		<h1 class="login-title"><%= hostname %></h1>
+		<p class="login-sub">морок · darkvibe</p>
+
+		<form method="post" action="<%= pcdata(luci.http.getenv("REQUEST_URI")) %>">
+			<%- if fuser then -%>
+			<div class="errorbox"><%:Invalid username and/or password! Please try again.%></div>
+			<%- end -%>
+
+			<div class="login-field user">
+				<label class="hidden" for="darkvibe-user"><%:Username%></label>
+				<input id="darkvibe-user" type="text" name="luci_username" autocomplete="username"
+					autocapitalize="none" spellcheck="false" placeholder="<%:Username%>"
+					value="<%= duser and pcdata(duser) or "" %>">
+			</div>
+
+			<div class="login-field pass">
+				<label class="hidden" for="darkvibe-pass"><%:Password%></label>
+				<input id="darkvibe-pass" type="password" name="luci_password" autocomplete="current-password"
+					placeholder="<%:Password%>">
+			</div>
+
+			<input type="submit" class="btn cbi-button-apply login-submit" value="<%:Log in%>">
+		</form>
+
+		<div class="login-foot">
+			<span><%= ver.distversion %></span>
+			<span>·</span>
+			<span>LuCI <%= ver.luciversion %></span>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+	var input = document.getElementById('darkvibe-pass') || document.getElementsByName('luci_username')[0];
+	if (input)
+		input.focus();
+//]]></script>
+
+</body>
+</html>

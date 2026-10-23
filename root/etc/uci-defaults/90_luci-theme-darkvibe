@@ -1,0 +1,15 @@
+#!/bin/sh
+# Регистрируем тему в LuCI и делаем её активной по умолчанию.
+# При обновлении пакета (PKG_UPGRADE=1) активную тему не трогаем.
+
+if ! uci get luci.themes.DarkVibe >/dev/null 2>&1; then
+	uci set luci.themes.DarkVibe=/luci-static/darkvibe
+fi
+
+if [ "$PKG_UPGRADE" != 1 ]; then
+	uci set luci.main.mediaurlbase=/luci-static/darkvibe
+fi
+
+uci commit luci
+
+exit 0

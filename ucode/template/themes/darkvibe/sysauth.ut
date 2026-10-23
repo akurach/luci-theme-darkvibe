@@ -1,0 +1,139 @@
+{#
+	DarkVibe — страница входа (ucode-шаблоны, OpenWrt 23.05 / 24.10+).
+	Полностью серверный рендер: форма шлёт luci_username/luci_password на текущий URI.
+-#}
+
+{%
+	import { cursor } from 'uci';
+
+	/* Акцентный цвет: пресеты + кастомный hex из /etc/config/darkvibe */
+	const DV_PRESETS = {
+		lime:   { hex: '#c3ee7a', ink: '#17200e' },
+		amber:  { hex: '#f2c268', ink: '#241a06' },
+		teal:   { hex: '#7adcd0', ink: '#06231f' },
+		violet: { hex: '#c4a7f5', ink: '#1d1030' },
+		rose:   { hex: '#f2a7bb', ink: '#2b0713' },
+		blue:   { hex: '#8ab8ff', ink: '#0a1a2e' }
+	};
+	function dv_hexpair(h) {
+		const D = '0123456789abcdef';
+		return (index(D, substr(h, 0, 1)) ?? 0) * 16 + (index(D, substr(h, 1, 1)) ?? 0);
+	}
+	let dv_hex = DV_PRESETS.violet.hex, dv_ink = DV_PRESETS.violet.ink;
+	try {
+		const dvcfg = cursor();
+		const dv_name = dvcfg.get('darkvibe', 'global', 'accent') || 'violet';
+		if (dv_name != 'custom' && DV_PRESETS[dv_name]) {
+			dv_hex = DV_PRESETS[dv_name].hex;
+			dv_ink = DV_PRESETS[dv_name].ink;
+		} else {
+			const custom = dvcfg.get('darkvibe', 'global', 'custom_accent') || '';
+			if (match(custom, /^#[0-9a-fA-F]{6}$/)) {
+				dv_hex = custom;
+				const r = dv_hexpair(substr(dv_hex, 1, 2)),
+				      g = dv_hexpair(substr(dv_hex, 3, 2)),
+				      b = dv_hexpair(substr(dv_hex, 5, 2));
+				dv_ink = (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#131b0c' : '#f2f5ee';
+			}
+		}
+	} catch (e) {}
+	const dv_rgb = `${dv_hexpair(substr(dv_hex, 1, 2))}, ${dv_hexpair(substr(dv_hex, 3, 2))}, ${dv_hexpair(substr(dv_hex, 5, 2))}`;
+
+	const boardinfo = ubus.call('system', 'board');
+	const hostname = striptags(boardinfo?.hostname ?? '?');
+
+	http.prepare_content('text/html; charset=UTF-8');
+-%}
+
+<!DOCTYPE html>
+<html lang="{{ dispatcher.lang }}">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{ hostname }} - LuCI</title>
+	<link rel="icon" href="{{ media }}/img/logo.svg" sizes="any" type="image/svg+xml">
+	<link rel="stylesheet" href="{{ media }}/css/cascade.css">
+	<style title="text/css">
+		:root {
+			--accent: {{ dv_hex }}; --accent-ink: {{ dv_hex }};
+			--accent-soft: rgba({{ dv_rgb }}, .12); --accent-line: rgba({{ dv_rgb }}, .35);
+			--on-accent: {{ dv_ink }}; --focus: {{ dv_hex }};
+		}
+	</style>
+</head>
+
+<body class="lang_{{ dispatcher.lang }} login-page-body">
+
+<div class="login-page">
+	<div class="login-card">
+		<span class="brand-mark logo-img"></span>
+		<h1 class="login-title">{{ hostname }}</h1>
+		<p class="login-sub">морок · darkvibe</p>
+
+		<form method="post" action="{{ entityencode(http.getenv('REQUEST_URI'), true) }}">
+			{%- if (fuser && !auth_plugin): %}
+			<div class="errorbox">{{ _('Invalid username and/or password! Please try again.') }}</div>
+			{% endif -%}
+
+			{%- if (auth_message): %}
+			<div class="errorbox">{{ auth_message }}</div>
+			{% endif -%}
+
+			<div class="login-field user">
+				<label class="hidden" for="darkvibe-user">{{ _('Username') }}</label>
+				<input id="darkvibe-user" type="text" name="luci_username" autocomplete="username"
+					autocapitalize="none" spellcheck="false" placeholder="{{ entityencode(_('Username'), true) }}"
+					value="{{ entityencode(duser, true) }}">
+			</div>
+
+			<div class="login-field pass">
+				<label class="hidden" for="darkvibe-pass">{{ _('Password') }}</label>
+				<input id="darkvibe-pass" type="password" name="luci_password" autocomplete="current-password"
+					placeholder="{{ entityencode(_('Password'), true) }}">
+			</div>
+
+			{%- if (auth_fields): %}
+			{%- for (let field in auth_fields): %}
+			<div class="login-field pass">
+				<label class="hidden" for="{{ entityencode(field.name, true) }}">{{ entityencode(_(field.label || field.name)) }}</label>
+				<input id="{{ entityencode(field.name, true) }}" type="{{ entityencode(field.type ?? 'password', true) }}"
+					name="{{ entityencode(field.name, true) }}"
+					placeholder="{{ entityencode(_(field.label ?? field.placeholder ?? field.name), true) }}"
+					{% if (field.autocomplete): %}autocomplete="{{ entityencode(field.autocomplete, true) }}"{% endif %}
+					{% if (field.required): %}required{% endif %}>
+			</div>
+			{%- endfor %}
+			{%- endif %}
+
+			{%- if (auth_html): %}
+			<div class="auth-plugin">{{ auth_html }}</div>
+			{% endif -%}
+
+			<input type="submit" class="btn cbi-button-apply login-submit" value="{{ _('Log in') }}">
+
+			{%- if (auth_assets): %}
+			{%- for (let asset in auth_assets): %}
+			{%- if (asset.type == 'script'): %}
+			<script src="{{ asset.src }}"></script>
+			{%- endif %}
+			{%- endfor %}
+			{%- endif %}
+		</form>
+
+		<div class="login-foot">
+			<a href="{{ entityencode(version.disturl ?? 'https://openwrt.org', true) }}" target="_blank" rel="noreferrer">{{ version.distname }} {{ version.distversion }}</a>
+			<span>·</span>
+			<span>LuCI {{ version.luciversion }}</span>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+	var input = document.getElementById('darkvibe-pass') || document.getElementsByName('luci_username')[0];
+	if (input)
+		input.focus();
+//]]></script>
+
+</body>
+</html>

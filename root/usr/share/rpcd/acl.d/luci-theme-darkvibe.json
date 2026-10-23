@@ -1,0 +1,11 @@
+{
+	"luci-theme-darkvibe": {
+		"description": "DarkVibe theme settings",
+		"read": {
+			"uci": [ "darkvibe" ]
+		},
+		"write": {
+			"uci": [ "darkvibe" ]
+		}
+	}
+}
